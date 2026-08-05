@@ -1,0 +1,13 @@
+.DS_Store
+.idea/
+.vscode/
+.env
+node_modules/
+dist/
+target/
+.m2/
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+DerivedData/
+*.xcuserstate

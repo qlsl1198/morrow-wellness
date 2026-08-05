@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: morrow
+      POSTGRES_USER: morrow
+      POSTGRES_PASSWORD: morrow
+    ports:
+      - "5432:5432"
+    volumes:
+      - morrow_data:/var/lib/postgresql/data
+volumes:
+  morrow_data:
