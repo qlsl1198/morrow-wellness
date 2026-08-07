@@ -35,6 +35,10 @@ npm run dev
 
 ```bash
 cd backend
+# AI 기능 활성화 (선택)
+cp .env.example .env
+# .env 파일에서 OPENAI_API_KEY 설정
+
 mvn spring-boot:run
 ```
 
@@ -43,6 +47,18 @@ mvn spring-boot:run
 - API 상태: http://localhost:8080/actuator/health
 
 웹은 API가 실행 중이면 실제 API를 사용하고, 꺼져 있으면 데모 데이터로 동작합니다.
+
+### AI 어시스턴트 설정
+
+AI 대화 기능을 사용하려면 OpenAI API 키가 필요합니다:
+
+1. [OpenAI API](https://platform.openai.com/)에서 API 키 발급
+2. `backend/.env` 파일 생성 및 키 설정
+3. `OPENAI_ENABLED=true` 설정
+
+**사용 모델**: GPT-4o (고품질 웰니스 조언, 깊은 감정 이해)
+
+API 키 없이도 기본 안내 메시지로 동작합니다. 자세한 내용은 [AI 어시스턴트 문서](docs/ai-assistant.md)를 참고하세요.
 
 ## iOS 및 Watch
 
@@ -53,6 +69,7 @@ Xcode에서 iOS App 프로젝트와 Watch App 타깃을 만든 뒤 `apps/ios/Sou
 - [MVP 범위](docs/mvp.md)
 - [아키텍처](docs/architecture.md)
 - [API 계약](docs/api.md)
+- [AI 어시스턴트](docs/ai-assistant.md)
 - [안전 및 개인정보](docs/safety-privacy.md)
 
 ## 팀 개발
