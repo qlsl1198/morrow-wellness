@@ -59,7 +59,7 @@ AI 응답 생성 전 위험 감지:
 
 ### 4. OpenAI API 통합
 
-- **모델**: GPT-4o-mini (기본)
+- **모델**: GPT-4o (기본) - 고품질 웰니스 조언
 - **온도**: 0.7 (자연스러운 대화)
 - **최대 토큰**: 500 (적절한 응답 길이)
 - **타임아웃**: 30초
@@ -74,7 +74,7 @@ cp backend/.env.example backend/.env
 
 # API 키 설정
 OPENAI_API_KEY=sk-your-api-key-here
-OPENAI_MODEL=gpt-4o-mini
+OPENAI_MODEL=gpt-4o
 OPENAI_ENABLED=true
 ```
 

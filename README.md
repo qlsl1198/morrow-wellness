@@ -56,6 +56,8 @@ AI 대화 기능을 사용하려면 OpenAI API 키가 필요합니다:
 2. `backend/.env` 파일 생성 및 키 설정
 3. `OPENAI_ENABLED=true` 설정
 
+**사용 모델**: GPT-4o (고품질 웰니스 조언, 깊은 감정 이해)
+
 API 키 없이도 기본 안내 메시지로 동작합니다. 자세한 내용은 [AI 어시스턴트 문서](docs/ai-assistant.md)를 참고하세요.
 
 ## iOS 및 Watch
