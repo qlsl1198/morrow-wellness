@@ -10,4 +10,5 @@ target/
 vite.config.js
 vite.config.d.ts
 DerivedData/
+build/
 *.xcuserstate
