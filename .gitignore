@@ -5,6 +5,7 @@
 node_modules/
 dist/
 target/
+backend/data/
 .m2/
 *.tsbuildinfo
 vite.config.js
