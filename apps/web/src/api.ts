@@ -1,6 +1,6 @@
 import type{AssistantResult,CheckInInput,ConnectionMode,Dashboard,PersonalizationProfile,TimelineItem,TimelineKind,UserMemory,WeeklyReport}from'./types';
 
-const API_ROOT='/api/v1';
+const API_ROOT=import.meta.env.VITE_API_BASE_URL||'/api/v1';
 const REQUEST_TIMEOUT=5000;
 const SESSION_KEY='morrow.web.session.v1';
 const INSTALLATION_KEY='morrow.web.installation.v1';

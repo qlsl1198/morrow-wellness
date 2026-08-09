@@ -48,9 +48,12 @@ mvn spring-boot:run
 - 웹: http://localhost:5173
 - API: http://localhost:8080/api/v1
 - API 상태: http://localhost:8080/actuator/health
+- GitHub Pages: https://qlsl1198.github.io/morrow-wellness/
 
 웹은 API가 실행 중이면 실제 API를 사용하고, 꺼져 있으면 데모 데이터로 동작합니다.
 백엔드는 첫 실행 시 발표용 샘플 데이터를 메모리 DB에 채웁니다. 빈 상태로 시작하려면 `MORROW_DEMO_SEED=false`를 설정하세요.
+
+`main` 또는 해커톤 PR 브랜치의 웹 코드가 변경되면 GitHub Actions가 `apps/web`을 빌드해 Pages에 자동 배포합니다. 외부 백엔드를 연결할 때는 저장소 Actions 변수 `VITE_API_BASE_URL`에 공개 HTTPS API 기준 URL을 설정하고, 비워두면 Pages 제출 링크는 안전한 데모 모드로 동작합니다.
 
 ## 완성된 핵심 흐름
 
