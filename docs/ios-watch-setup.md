@@ -1,8 +1,10 @@
 # iOS/watchOS 설정
 
-1. Xcode에서 `apps/apple/Morrow.xcodeproj`를 엽니다.
+먼저 [morrow-frontend](https://github.com/AISH-Official/morrow-frontend) 저장소를 클론합니다.
+
+1. Xcode에서 `apple/Morrow.xcodeproj`를 엽니다.
 2. iOS App과 Watch App 타깃의 Team·Bundle Identifier를 확인합니다.
-3. `apps/ios/Sources`, `apps/watch/Sources`가 각 타깃에 포함됐는지 확인합니다.
+3. `ios/Sources`, `watch/Sources`가 각 타깃에 포함됐는지 확인합니다.
 4. iOS와 Watch 타깃의 Signing & Capabilities에서 HealthKit과 Push Notifications를 활성화합니다.
 5. `NSHealthShareUsageDescription`에 사용 목적을 작성합니다.
 6. 실제 iPhone과 Apple Watch에서 권한과 통신 흐름을 검증합니다.
@@ -37,4 +39,4 @@ MVP 코드는 HealthKit 권한 요청, 실제 일별 표본 집계, WatchConnect
 - Watch 체크인: 상태 선택 → 원인 선택의 2단계 입력, 전송 성공 햅틱과 iPhone 동기화
 - Watch 1분 회복: 들숨·날숨 큐, 진행 링, 주기적 햅틱, 일시정지·재시작
 
-디자인 토큰(간격, 코너 반경, 부하 레벨 컬러)은 `apps/ios/Sources/DesignSystem/Theme.swift`에 모여 있으며 시스템 컬러 기반이라 다크 모드를 자동 지원합니다.
+디자인 토큰(간격, 코너 반경, 부하 레벨 컬러)은 프론트엔드 저장소의 `ios/Sources/DesignSystem/Theme.swift`에 모여 있으며 시스템 컬러 기반이라 다크 모드를 자동 지원합니다.
