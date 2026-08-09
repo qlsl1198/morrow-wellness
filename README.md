@@ -48,7 +48,7 @@ mvn spring-boot:run
 - 웹: http://localhost:5173
 - API: http://localhost:8080/api/v1
 - API 상태: http://localhost:8080/actuator/health
-- GitHub Pages: https://qlsl1198.github.io/morrow-wellness/
+- GitHub Pages: https://aish-official.github.io/morrow-wellness/
 
 웹은 API가 실행 중이면 실제 API를 사용하고, 꺼져 있으면 데모 데이터로 동작합니다.
 백엔드는 첫 실행 시 발표용 샘플 데이터를 메모리 DB에 채웁니다. 빈 상태로 시작하려면 `MORROW_DEMO_SEED=false`를 설정하세요.
