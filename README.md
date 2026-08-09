@@ -2,6 +2,18 @@
 
 Apple Watch, iPhone, PC 웹을 잇는 크로스디바이스 AI 웰니스 어시스턴트입니다. 생체 신호와 짧은 자기 보고를 결합해 사용자가 지금 할 수 있는 작은 회복 행동을 설명 가능한 형태로 제안합니다.
 
+## 저장소 구성
+
+Morrow는 프론트엔드와 백엔드를 독립적으로 배포·운영할 수 있도록 저장소를 분리했습니다.
+
+| 저장소 | 역할 | 배포·검증 |
+| --- | --- | --- |
+| [morrow-frontend](https://github.com/AISH-Official/morrow-frontend) | React 웹, SwiftUI iPhone, Apple Watch | 웹·Apple CI, GitHub Pages |
+| [morrow-backend](https://github.com/AISH-Official/morrow-backend) | Spring API, AI 개인화, 건강 데이터 동기화, APNs | Maven CI |
+| [morrow-wellness](https://github.com/AISH-Official/morrow-wellness) | 통합 문서, 아키텍처, 해커톤 운영 기록 | 통합 참조 허브 |
+
+활성 기능 개발은 `morrow-frontend`와 `morrow-backend`에서 진행합니다. 이 저장소의 기존 소스는 분리 시점의 이력과 통합 참조를 위해 보존합니다.
+
 - Apple Watch: 오늘 회복 점수·건강 신호·추천 확인, 2단계 체크인, 1분 호흡 회복, 최근 기록
 - iPhone: HealthKit 권한·동기화, 개인 기준선 분석, 타임라인, 행동 추천
 - PC 웹: 실시간 상태 보드, 주간 패턴, 음성 지원 AI 대화, 기록·개인정보 관리
@@ -48,12 +60,12 @@ mvn spring-boot:run
 - 웹: http://localhost:5173
 - API: http://localhost:8080/api/v1
 - API 상태: http://localhost:8080/actuator/health
-- GitHub Pages: https://aish-official.github.io/morrow-wellness/
+- GitHub Pages: https://aish-official.github.io/morrow-frontend/
 
 웹은 API가 실행 중이면 실제 API를 사용하고, 꺼져 있으면 데모 데이터로 동작합니다.
 백엔드는 첫 실행 시 발표용 샘플 데이터를 메모리 DB에 채웁니다. 빈 상태로 시작하려면 `MORROW_DEMO_SEED=false`를 설정하세요.
 
-`main` 또는 해커톤 PR 브랜치의 웹 코드가 변경되면 GitHub Actions가 `apps/web`을 빌드해 Pages에 자동 배포합니다. 외부 백엔드를 연결할 때는 저장소 Actions 변수 `VITE_API_BASE_URL`에 공개 HTTPS API 기준 URL을 설정하고, 비워두면 Pages 제출 링크는 안전한 데모 모드로 동작합니다.
+`morrow-frontend`의 `main` 웹 코드가 변경되면 GitHub Actions가 `web`을 빌드해 Pages에 자동 배포합니다. 외부 백엔드를 연결할 때는 프론트엔드 저장소 Actions 변수 `VITE_API_BASE_URL`에 공개 HTTPS API 기준 URL을 설정하고, 비워두면 Pages 제출 링크는 안전한 데모 모드로 동작합니다.
 
 ## 완성된 핵심 흐름
 
@@ -96,7 +108,7 @@ API 키 없이도 기본 안내 메시지로 동작합니다. 자세한 내용�
 
 ## 팀 개발
 
-모든 작업은 기능 브랜치에서 진행하고 Pull Request로 `main`에 병합합니다. PR이 열리면 PC 웹 빌드와 Java 백엔드 테스트가 자동으로 실행됩니다.
+모든 작업은 담당 저장소의 기능 브랜치에서 진행하고 Pull Request로 `main`에 병합합니다. 프론트엔드 PR은 웹·iPhone·Watch 빌드를, 백엔드 PR은 Java 테스트를 자동 실행합니다.
 
 - [기여 및 브랜치·PR 가이드](CONTRIBUTING.md)
 - [Pull Request 템플릿](.github/pull_request_template.md)
