@@ -24,4 +24,4 @@ jobs:
             exit 1
           fi
       - name: Check whitespace errors
-        run: git diff --check HEAD^ HEAD
+        run: git show --check --format= HEAD
