@@ -74,8 +74,10 @@ AI 응답 생성 전 위험 감지:
 ### 환경 변수
 
 ```bash
-# .env 파일 생성
-cp backend/.env.example backend/.env
+# 백엔드 저장소에서 .env 파일 생성
+git clone https://github.com/AISH-Official/morrow-backend.git
+cd morrow-backend
+cp .env.example .env
 
 # API 키 설정
 OPENAI_API_KEY=sk-your-api-key-here
