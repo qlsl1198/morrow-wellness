@@ -6,6 +6,8 @@ Apple Watch, iPhone, PC 웹을 잇는 크로스디바이스 AI 웰니스 어시�
 - iPhone: HealthKit 권한·동기화, 개인 기준선 분석, 타임라인, 행동 추천
 - PC 웹: 실시간 상태 보드, 주간 패턴, 음성 지원 AI 대화, 기록·개인정보 관리
 - 개인화 학습: 체크인과 추천 피드백을 설명 가능한 장기 메모리로 누적하고, 다음 추천과 AI 답변에 반영
+- 기기 계정: iPhone의 6자리 코드로 Watch·iPhone·웹 데이터를 동일 사용자에 연결
+- 알림: 기기 로컬 체크인 알림과 APNs 기반 iPhone·Apple Watch 회복 알림
 - Java API: 체크인→타임라인→추천 파이프라인, 사용자 격리, 피드백과 전체 삭제 제공
 
 이 서비스는 의료 진단이나 치료를 제공하지 않습니다. 생체 신호만으로 상태를 단정하지 않고 사용자의 직접 입력을 함께 반영합니다.
@@ -77,6 +79,8 @@ API 키 없이도 기본 안내 메시지로 동작합니다. 자세한 내용�
 ## iOS 및 Watch
 
 `apps/apple/Morrow.xcodeproj`에 iOS·watchOS 타깃이 함께 구성되어 있습니다. HealthKit capability와 사용 목적 문구, 실제 기기 서명만 확인하면 됩니다. 자세한 내용은 [iOS/watchOS 설정](docs/ios-watch-setup.md)을 참고하세요.
+
+실제 기기에서 Mac의 로컬 백엔드를 사용할 때는 iPhone 설정의 서버 API 주소를 `http://{Mac의 LAN IP}:8080/api/v1`로 변경해야 합니다. 원격 알림은 백엔드 실행만으로 활성화되지 않으며 Apple APNs 키 환경 변수와 Push Notifications capability가 함께 준비돼야 합니다.
 
 ## 문서
 
