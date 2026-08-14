@@ -1,61 +1,95 @@
 # API 계약
 
-기준 URL은 `/api/v1`입니다.
+기준 경로는 `/api/v1`입니다. 배포 환경에서는 기기별 `Authorization: Bearer {accessToken}`을 사용하며, 토큰으로 확인된 사용자와 요청의 `userId`가 다르면 거부합니다.
+
+## 인증과 기기 연결
 
 | Method | Path | 설명 |
-|---|---|---|
-| POST | `/auth/device` | iPhone·웹 기기 세션과 Bearer 토큰·연결 코드 발급 |
-| POST | `/auth/pair` | 6자리 연결 코드로 다른 기기를 같은 사용자에 연결 |
-| GET | `/dashboard?userId={id}` | 오늘 상태, 타임라인, 추천 조회 |
-| POST | `/check-ins` | 워치·iPhone·웹 체크인 생성 |
-| POST | `/health/snapshots` | iPhone·Watch에서 계산한 웰니스 일별 요약 동기화 |
-| POST | `/notifications/devices` | iOS/watchOS APNs 기기 토큰 등록 |
-| DELETE | `/notifications/devices` | APNs 기기 토큰 비활성화 |
-| POST | `/notifications/test` | 현재 사용자의 등록 기기에 테스트 알림 발송 |
-| GET | `/notifications/status` | APNs 설정 준비 상태와 활성 기기 수 확인 |
-| DELETE | `/check-ins/{id}` | 개별 체크인 삭제 |
-| DELETE | `/users/me/data?userId={id}` | 현재 사용자의 웰니스 데이터 전체 삭제 |
+| --- | --- | --- |
+| `POST` | `/auth/account` | 계정 ID로 로그인하고 현재 기기 토큰 발급 |
+| `POST` | `/auth/pairing-code?deviceId={id}` | 로그인한 설정 화면에서 연결 코드 갱신 |
+| `POST` | `/auth/pair` | 연결 코드로 새 기기를 같은 계정에 연결 |
+| `GET` | `/auth/devices` | 현재 계정에 연결된 기기 조회 |
+| `DELETE` | `/auth/devices/{id}` | 선택한 기기 연결 해제 |
+| `POST` | `/auth/logout` | 현재 기기 토큰 폐기 |
+| `POST` | `/auth/device` | 로컬·이전 클라이언트 호환용 기기 등록 |
 
-## 체크인 생성 예시
+일반 사용자 흐름은 로그인 화면에서 계정 ID만 입력합니다. 연결 코드는 로그인 수단이 아니며, 로그인 후 설정에서 iPhone·Watch·웹을 추가할 때만 사용합니다. 코드는 만료되지만 한 번 연결된 기기와 계정 관계는 로그아웃, 기기 해제 또는 계정 삭제 전까지 유지됩니다.
 
 ```json
+POST /api/v1/auth/account
 {
-  "userId": "default-user",
+  "accountId": "demo-user",
+  "deviceId": "web-7c15...",
+  "deviceName": "Chrome on Mac",
+  "platform": "WEB"
+}
+```
+
+## 핵심 데이터
+
+| Method | Path | 설명 |
+| --- | --- | --- |
+| `GET` | `/dashboard?userId={id}` | 회복 점수, 근거, 건강 상세, KST 타임라인, 현재 추천 |
+| `POST` | `/check-ins` | 멱등 체크인 생성 |
+| `GET` | `/check-ins?userId={id}` | 사용자 체크인 조회 |
+| `DELETE` | `/check-ins/{id}` | 개별 체크인 삭제 |
+| `POST` | `/health/snapshots` | HealthKit 파생 요약과 수면·운동 상세 동기화 |
+| `PATCH` | `/timeline/{id}` | 타임라인 내용과 사용자 확인 상태 수정 |
+| `POST` | `/recommendations/{id}/feedback` | 추천 완료·도움 여부 기록 |
+| `GET` | `/reports/weekly?userId={id}` | 최근 7일 패턴과 회복 효과 조회 |
+
+### 체크인 멱등성
+
+```json
+POST /api/v1/check-ins
+{
+  "userId": "demo-user",
+  "clientEventId": "watch-20260814-143000-abc",
   "status": "TIRED",
   "cause": "SLEEP",
   "note": "어제 늦게 잠들었음",
   "source": "WATCH",
-  "recordedAt": "2026-08-03T14:30:00+09:00"
+  "recordedAt": "2026-08-14T14:30:00+09:00"
 }
 ```
 
-상태: `OK`, `TENSE`, `TIRED`, `LOW_FOCUS`, `UNCOMFORTABLE`
+같은 `clientEventId`를 WatchConnectivity나 네트워크 재시도로 다시 보내면 기존 체크인을 반환합니다. 타임라인·추천·개인화 학습도 중복 생성하지 않습니다. 상태는 `OK`, `TENSE`, `TIRED`, `LOW_FOCUS`, `UNCOMFORTABLE`, 원인은 `SLEEP`, `WORK`, `STUDY`, `RELATIONSHIP`, `PHYSICAL`, `UNKNOWN`, 소스는 `WATCH`, `IPHONE`, `WEB`입니다.
 
-원인: `SLEEP`, `WORK`, `STUDY`, `RELATIONSHIP`, `PHYSICAL`, `UNKNOWN`
+### 건강 상세
 
-소스: `WATCH`, `IPHONE`, `WEB`
+`POST /health/snapshots`는 일별 수면·심박·HRV·걸음·활동 에너지뿐 아니라 다음 상세를 받습니다.
 
-## 후속 API
+- 수면: 시작·종료, 총 시간, 코어·깊은·REM·깨어있음 분, 데이터 소스
+- 운동: 종류, 시작·종료, 시간, 활동 에너지, 거리, 평균·최대 심박, 추정 강도
 
-- `PATCH /timeline/{id}`: AI 생성 기록 수정
-- `POST /recommendations/{id}/feedback`: 실행 및 도움 여부 기록
-- `GET /reports/weekly?userId={id}`: 주간 패턴 조회
-- `POST /assistant/messages`: 안전 정책을 적용한 AI 대화
-- `GET /assistant/messages`: 사용자별 최근 대화 기록
-- `GET /assistant/status`: OpenAI 활성화·키·모델 준비 상태(키 값은 노출하지 않음)
-- `GET /personalization/profile`: 활성 메모리와 학습 근거 요약
-- `GET /personalization/memories`: AI가 사용하는 설명 가능한 사용자 메모리 목록
-- `POST /personalization/memories`: 사용자가 선호 또는 목표를 직접 기억시킴
-- `PATCH /personalization/memories/{id}`: 메모리 수정 또는 비활성화
-- `DELETE /personalization/memories/{id}`: 사용자별 메모리 삭제
-- `POST /personalization/rebuild`: 전체 체크인·추천 피드백에서 메모리 재생성
+`clientSnapshotId`와 수면·운동별 클라이언트 ID로 재전송을 멱등 처리합니다. 서버와 웹의 날짜 묶음 및 타임라인 표시 기준은 `Asia/Seoul`입니다.
 
-## 기기 인증과 페어링
+## 회복 행동과 AI
 
-`POST /auth/device`에 고유 `deviceId`, 표시 이름, `IOS` 또는 `WEB` 플랫폼을 보내면 `userId`, `accessToken`, `pairingCode`가 발급됩니다. 이후 요청은 `Authorization: Bearer {accessToken}`을 포함합니다. iPhone 설정에 표시되는 연결 코드를 웹 개인정보 화면의 기기 연결 폼에 입력하면 두 기기가 같은 `userId`로 묶입니다. Watch는 iPhone의 암호화된 WatchConnectivity 채널로 서버 주소와 기기 세션을 전달받습니다.
+| Method | Path | 설명 |
+| --- | --- | --- |
+| `GET/POST` | `/recovery-attempts` | 최근 회복 행동 조회·새 실행 생성 |
+| `PATCH` | `/recovery-attempts/{id}/start` | 제안 행동 실행 시작 |
+| `PATCH` | `/recovery-attempts/{id}/complete` | 체감 결과 기록과 개인화 학습 |
+| `POST/GET` | `/assistant/messages` | 새 AI 응답 생성·최근 이력 조회 |
+| `DELETE` | `/assistant/messages` | 계정의 대화 기록 삭제 |
+| `POST` | `/assistant/proactive-insight` | 건강·체크인 흐름 기반 선제 알림 판단·문구 생성 |
+| `GET` | `/assistant/status` | 모델 준비 상태와 최근 성공·실패 지표 조회 |
+| `GET` | `/personalization/profile` | 활성 메모리와 학습 근거 요약 |
+| `GET/POST` | `/personalization/memories` | 메모리 조회·사용자 선호/목표 생성 |
+| `PATCH/DELETE` | `/personalization/memories/{id}` | 메모리 수정·비활성화·삭제 |
+| `POST` | `/personalization/rebuild` | 기록에서 자동 학습 메모리 재구성 |
 
-로컬 데모 호환성을 위해 `MORROW_AUTH_REQUIRED=false`에서는 무인증 요청도 허용됩니다. 배포 환경은 반드시 `MORROW_AUTH_REQUIRED=true`로 설정해야 하며, Bearer 토큰이 있으면 요청 본문의 다른 `userId` 접근은 항상 거부됩니다.
+## 알림·개인정보
 
-## APNs 알림
+| Method | Path | 설명 |
+| --- | --- | --- |
+| `POST/DELETE` | `/notifications/devices` | iOS/watchOS APNs 토큰 등록·비활성화 |
+| `POST` | `/notifications/test` | 현재 계정의 등록 기기에 테스트 알림 발송 |
+| `GET` | `/notifications/status` | APNs 설정 준비 상태와 활성 기기 수 조회 |
+| `GET/PATCH` | `/privacy/ai-health-consent` | 건강 요약의 AI 컨텍스트 사용 동의 조회·변경 |
+| `DELETE` | `/users/me/data` | 웰니스 기록·추천·대화·메모리·건강 요약 삭제 |
+| `DELETE` | `/users/me/account` | 계정, 연결 기기와 모든 데이터 완전 삭제 |
 
-`APNS_ENABLED=true`, Apple Team ID, APNs Key ID, `.p8` 개인 키 경로, iOS/watchOS bundle topic을 설정해야 실제 원격 알림이 발송됩니다. 앱의 로컬 체크인 알림은 APNs 설정 없이도 동작하지만, 서버 기반 회복 알림과 테스트 알림은 APNs 설정이 준비돼야 합니다.
+로컬 데모 호환성을 위해 `MORROW_AUTH_REQUIRED=false`를 사용할 수 있지만, 운영 배포는 `true`여야 합니다. 실제 키와 비밀번호는 응답·로그·문서에 노출하지 않습니다.
